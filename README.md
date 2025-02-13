@@ -1,6 +1,6 @@
 # VenusAimBot
 
-![Imgur](https://imgur.com/AbkOIv8)
+![Imgur]([https://imgur.com/AbkOIv8](https://i.imgur.com/LDUmkta_d.png?maxwidth=520&shape=thumb&fidelity=high))
 
 VenusAimBot é um aimbot baseado em IA para Fortnite, utilizando **YOLO v5** para detecção de inimigos em tempo real. Ele captura a tela, processa os frames com YOLO e move o mouse automaticamente para mirar no alvo.
 
