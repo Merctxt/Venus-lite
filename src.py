@@ -11,37 +11,42 @@ import pygetwindow
 import bettercam
 import os
 
-# Configurações básicas
-screenShotHeight = 320
-screenShotWidth = 320
-useMask = False
-maskSide = "left"
-maskWidth = 80
-maskHeight = 200
-aaMovementAmp = 0.4
-confidence = 0.4
-aaQuitKey = "p"
-headshot_mode = True
-cpsDisplay = True
-visuals = False
-centerOfScreen = True
+# --------------Configurations--------------
+
+
+screenShotHeight = 320 # models entrace size
+screenShotWidth = 320 # models entrace size
+useMask = False # if True, a mask will be applied to the screen, useful for games with a fixed HUD
+maskSide = "left" # "left", "center" or "right"
+maskWidth = 80 # mask width
+maskHeight = 200 # mask height
+aaMovementAmp = 0.5 # recomended to keep between 0.1 and 0.5
+confidence = 0.64 # recomended to keep between 0.5 and 0.7
+aaQuitKey = "p" # recomended to keep it "p"
+headshot_mode = True # if True, aimbot will aim at the head of the target, else it will aim at the body
+cpsDisplay = True # recomended to keep it True
+visuals = False # not working
+centerOfScreen = True # recomended to keep it True
 onnxChoice = 1  # 1: CPU, 2: AMD, 3: NVIDIA
-targett_fps = 60
+targett_fps = 60 # fps used by the camera
 
-ORANGE = "\033[38;2;255;165;0m"  # Cor laranja
-GREEN = "\033[32m"  # Cor verde
-RED = "\033[31m"    # Cor vermelha
-RESET = "\033[0m"   # Resetando a cor para a padrão
+# ----------------Colors--------------
+ORANGE = "\033[38;2;255;165;0m"  # orange
+GREEN = "\033[32m"  # green
+RED = "\033[31m"    # red
+RESET = "\033[0m"   # default
 
+
+# ----------------UI----------------
 def clear_line():
-    print("\033[K", end="")  # Código ANSI para limpar a linha
+    print("\033[K", end="")  # Code for ANSI clear line
 
 def clear():
     os.system("cls" if os.name == "nt" else "clear")
 
 def display_title():
     clear()
-    # Exibe o título em verde (ANSI escape code)
+    #  (ANSI escape code)
     print(ORANGE + """
     
 ____    ____  _______ .__   __.  __    __       _______.        ___       __  
@@ -54,7 +59,7 @@ ____    ____  _______ .__   __.  __    __       _______.        ___       __
 
 """ + RESET)
 
-# Funções auxiliares
+# ----------------Functions----------------
 def xyxy2xywh(x):
     y = x.clone() if isinstance(x, torch.Tensor) else np.copy(x)
     y[..., 0] = (x[..., 0] + x[..., 2]) / 2
@@ -139,6 +144,8 @@ def non_max_suppression(
             break
     return output
 
+# ----------------Game Selection window----------------
+
 def gameSelection(target_fps):
     try:
         videoGameWindows = pygetwindow.getAllWindows()
@@ -183,7 +190,7 @@ def gameSelection(target_fps):
     camera.start(target_fps=targett_fps, video_mode=True)
     return camera, screenShotWidth // 2, screenShotHeight // 2
 
-# Estrutura para envio de movimento do mouse
+# ----------------Mouse Control----------------
 class MOUSEINPUT(ctypes.Structure):
     _fields_ = [("dx", ctypes.c_long),
                 ("dy", ctypes.c_long),
@@ -208,6 +215,8 @@ def send_mouse_move(rel_x, rel_y):
     inp.mi.dwFlags = 0x0001
     ctypes.windll.user32.SendInput(1, ctypes.byref(inp), ctypes.sizeof(INPUT))
 
+# ----------------Main----------------
+
 def main():
     sel = gameSelection(target_fps=targett_fps)
     if sel is None:
@@ -218,7 +227,7 @@ def main():
     last_mid_coord = None
     aimbot_active = False
 
-    # Configuração do provider ONNX
+    #  ONNX provider configuration
     if onnxChoice == 1:
         onnxProvider = "CPUExecutionProvider"
     elif onnxChoice == 2:
@@ -307,7 +316,7 @@ def main():
                     last_mid_coord = None
 
 
-            if visuals: # não é necessário para o aimbot
+            if visuals: # not working
                 for i in range(len(targets) if not targets.empty else 0):
                     halfW = round(targets["width"].iloc[i] / 2)
                     halfH = round(targets["height"].iloc[i] / 2)

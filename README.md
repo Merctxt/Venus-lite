@@ -1,8 +1,8 @@
-# VenusAimBot
+# Venus Lite
 
 ![Imgur](https://i.imgur.com/LDUmkta.png)
 
-VenusAimBot é um aimbot baseado em IA para Fortnite, utilizando **YOLO v5** para detecção de inimigos em tempo real. Ele captura a tela, processa os frames com YOLO e move o mouse automaticamente para mirar no alvo.
+Venus Lite é um aimbot baseado em IA para Fortnite, utilizando **YOLO v5** para detecção de inimigos em tempo real. Ele captura a tela, processa os frames com YOLO e move o mouse automaticamente para mirar no alvo.
 
 ## Características
 ✅ Detecção de inimigos em tempo real com YOLO v5  
@@ -68,7 +68,7 @@ VenusAimBot é um aimbot baseado em IA para Fortnite, utilizando **YOLO v5** par
 ---
 
 ## ⚠️ Aviso Legal
-**Este software é apenas para fins educacionais.** O uso de aimbots em jogos online pode resultar em banimento da conta. Use por sua conta e risco.
+**Este software é apenas para fins educacionais.** Por mais que o Venus Lite seja atualmente indetectável o uso de aimbots em jogos online pode resultar em banimento da conta. Use por sua conta e risco.
 
 ---
 
