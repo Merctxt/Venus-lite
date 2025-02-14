@@ -28,13 +28,28 @@ cpsDisplay = True # recomended to keep it True
 visuals = False # not working
 centerOfScreen = True # recomended to keep it True
 onnxChoice = 1  # 1: CPU, 2: AMD, 3: NVIDIA
-targett_fps = 60 # fps used by the camera
+target_fps = 60 # fps used by the camera
+models_path = 1 # 1: fortnite, 2: Universal Medium, 3: Universal Small
 
 # ----------------Colors--------------
 ORANGE = "\033[38;2;255;165;0m"  # orange
 GREEN = "\033[32m"  # green
 RED = "\033[31m"    # red
 RESET = "\033[0m"   # default
+
+# ----------------Models Path-------------- 
+
+if models_path == 1:
+    model_path = "models/fortnite.onnx"
+elif models_path == 2:
+    model_path = "models/yoloU-medium.onnx"
+elif models_path == 3:
+    model_path = "models/yoloU-small.onnx"
+else:
+    print(f"{RED}Model not found!")
+    print(f"1: fortnite, 2: Universal Medium, 3: Universal Small")
+    print(f"Exiting...{RESET}")
+    exit()
 
 
 # ----------------UI----------------
@@ -149,7 +164,7 @@ def non_max_suppression(
 def gameSelection(target_fps):
     try:
         videoGameWindows = pygetwindow.getAllWindows()
-        print("=== Todas as Janelas ===")
+        print(f"{ORANGE}=== Todas as Janelas ===")
         for index, window in enumerate(videoGameWindows):
             if window.title != "":
                 print(f"[{index}]: {window.title}")
@@ -177,7 +192,7 @@ def gameSelection(target_fps):
     if not activationSuccess:
         return None
     display_title()
-    print("Janela ativada com sucesso!")
+    print(f"{GREEN}Janela ativada com sucesso!{RESET}")
     print("Presione F1 para encerrar o programa e F2 para ligar/desligar o aimbot.")
     left = ((videoGameWindow.left + videoGameWindow.right) // 2) - (screenShotWidth // 2)
     top = videoGameWindow.top + (videoGameWindow.height - screenShotHeight) // 2
@@ -187,7 +202,7 @@ def gameSelection(target_fps):
     if camera is None:
         print("Erro na câmera!")
         return None
-    camera.start(target_fps=targett_fps, video_mode=True)
+    camera.start(target_fps=target_fps, video_mode=True)
     return camera, screenShotWidth // 2, screenShotHeight // 2
 
 # ----------------Mouse Control----------------
@@ -218,7 +233,7 @@ def send_mouse_move(rel_x, rel_y):
 # ----------------Main----------------
 
 def main():
-    sel = gameSelection(target_fps=targett_fps)
+    sel = gameSelection(target_fps=target_fps)
     if sel is None:
         return
     camera, cWidth, cHeight = sel
@@ -237,7 +252,7 @@ def main():
 
     so = ort.SessionOptions()
     so.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
-    ort_sess = ort.InferenceSession('models/best.onnx', sess_options=so, providers=[onnxProvider])
+    ort_sess = ort.InferenceSession(model_path, sess_options=so, providers=[onnxProvider])
     COLORS = np.random.uniform(0, 255, size=(1500, 3))
 
     while win32api.GetAsyncKeyState(ord(aaQuitKey)) == 0:
