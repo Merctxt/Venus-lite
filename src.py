@@ -171,7 +171,7 @@ def gameSelection(target_fps):
         return None
     display_title()
     print("Janela ativada com sucesso!")
-    print("Presione F1 para encerrar o programa e Right Shift para ligar/desligar o aimbot.")
+    print("Presione F1 para encerrar o programa e F2 para ligar/desligar o aimbot.")
     left = ((videoGameWindow.left + videoGameWindow.right) // 2) - (screenShotWidth // 2)
     top = videoGameWindow.top + (videoGameWindow.height - screenShotHeight) // 2
     region = (left, top, left + screenShotWidth, top + screenShotHeight)
