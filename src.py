@@ -232,92 +232,96 @@ def main():
     COLORS = np.random.uniform(0, 255, size=(1500, 3))
 
     while win32api.GetAsyncKeyState(ord(aaQuitKey)) == 0:
-        if win32api.GetAsyncKeyState(win32con.VK_RSHIFT) & 0x0001:
+        if win32api.GetAsyncKeyState(win32con.VK_F2) & 0x0001:
             clear_line()
             aimbot_active = not aimbot_active
-            print(f"{GREEN}           Aimbot ligado{RESET}" if aimbot_active else f"{RED}         Aimbot desligado{RESET}", end="\r")
+            print(f"{GREEN}               Aimbot ligado{RESET}" if aimbot_active else f"{RED}            Aimbot desligado{RESET}", end="\r")
             time.sleep(0.2)
 
+        if win32api.GetAsyncKeyState(win32con.VK_F1) & 0x8000:
+            break
+
+        if aimbot_active and win32api.GetAsyncKeyState(win32con.VK_RBUTTON) & 0x8000:
         # Pega o frame atual
-        npImg = np.array(camera.get_latest_frame())
-        if useMask:
-            if maskSide.lower() == "right":
-                npImg[-maskHeight:, -maskWidth:, :] = 0
-            elif maskSide.lower() == "left":
-                npImg[-maskHeight:, :maskWidth, :] = 0
+            npImg = np.array(camera.get_latest_frame())
+            if useMask:
+                if maskSide.lower() == "right":
+                    npImg[-maskHeight:, -maskWidth:, :] = 0
+                elif maskSide.lower() == "left":
+                    npImg[-maskHeight:, :maskWidth, :] = 0
 
-        # Só roda a detecção se o aimbot estiver ativo
-        if aimbot_active:
-            if onnxChoice == 3:
-                im = torch.from_numpy(npImg).to('cuda')
-                if im.shape[2] == 4:
-                    im = im[:, :, :3]
-                im = torch.movedim(im, 2, 0)
-                im = im.half() / 255
-                if len(im.shape) == 3:
-                    im = im.unsqueeze(0)
-            else:
-                im = np.array([npImg])
-                if im.shape[3] == 4:
-                    im = im[:, :, :, :3]
-                im = im / 255
-                im = im.astype(np.half)
-                im = np.moveaxis(im, 3, 1)
-            if onnxChoice == 3:
-                # Se necessário, adapte para Nvidia
-                outputs = ort_sess.run(None, {'images': im.cpu().numpy()})
-            else:
-                outputs = ort_sess.run(None, {'images': im})
-            im_out = torch.from_numpy(outputs[0]).to('cpu')
-            pred = non_max_suppression(im_out, confidence, confidence, max_det=10)
-            targets = []
-            for det in pred:
-                if len(det):
-                    for *xyxy, conf, cls in reversed(det):
-                        norm_box = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / torch.tensor([screenShotWidth, screenShotHeight, screenShotWidth, screenShotHeight])).view(-1)
-                        targets.append(norm_box.tolist() + [float(conf)])
-            targets = pd.DataFrame(targets, columns=['current_mid_x', 'current_mid_y', 'width', "height", "confidence"]) if targets else pd.DataFrame()
-            if not targets.empty:
-                if centerOfScreen:
-                    targets["dist_from_center"] = np.sqrt((targets.current_mid_x * screenShotWidth - cWidth) ** 2 +
-                                                        (targets.current_mid_y * screenShotHeight - cHeight) ** 2)
-                    targets = targets.sort_values("dist_from_center")
+            # Só roda a detecção se o aimbot estiver ativo
+            if aimbot_active:
+                if onnxChoice == 3:
+                    im = torch.from_numpy(npImg).to('cuda')
+                    if im.shape[2] == 4:
+                        im = im[:, :, :3]
+                    im = torch.movedim(im, 2, 0)
+                    im = im.half() / 255
+                    if len(im.shape) == 3:
+                        im = im.unsqueeze(0)
+                else:
+                    im = np.array([npImg])
+                    if im.shape[3] == 4:
+                        im = im[:, :, :, :3]
+                    im = im / 255
+                    im = im.astype(np.half)
+                    im = np.moveaxis(im, 3, 1)
+                if onnxChoice == 3:
+                    # Se necessário, adapte para Nvidia
+                    outputs = ort_sess.run(None, {'images': im.cpu().numpy()})
+                else:
+                    outputs = ort_sess.run(None, {'images': im})
+                im_out = torch.from_numpy(outputs[0]).to('cpu')
+                pred = non_max_suppression(im_out, confidence, confidence, max_det=10)
+                targets = []
+                for det in pred:
+                    if len(det):
+                        for *xyxy, conf, cls in reversed(det):
+                            norm_box = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / torch.tensor([screenShotWidth, screenShotHeight, screenShotWidth, screenShotHeight])).view(-1)
+                            targets.append(norm_box.tolist() + [float(conf)])
+                targets = pd.DataFrame(targets, columns=['current_mid_x', 'current_mid_y', 'width', "height", "confidence"]) if targets else pd.DataFrame()
+                if not targets.empty:
+                    if centerOfScreen:
+                        targets["dist_from_center"] = np.sqrt((targets.current_mid_x * screenShotWidth - cWidth) ** 2 +
+                                                            (targets.current_mid_y * screenShotHeight - cHeight) ** 2)
+                        targets = targets.sort_values("dist_from_center")
 
-    # Convertendo coordenadas normalizadas para pixels
-                xMid = targets.iloc[0].current_mid_x * screenShotWidth
-                yMid = targets.iloc[0].current_mid_y * screenShotHeight
-                box_height = targets.iloc[0].height * screenShotHeight
+        # Convertendo coordenadas normalizadas para pixels
+                    xMid = targets.iloc[0].current_mid_x * screenShotWidth
+                    yMid = targets.iloc[0].current_mid_y * screenShotHeight
+                    box_height = targets.iloc[0].height * screenShotHeight
 
-                headshot_offset = box_height * (0.35 if headshot_mode else 0.2)
+                    headshot_offset = box_height * (0.35 if headshot_mode else 0.2)
 
-                # Corrigindo cálculo de movimento do mouse
-                mouseMove = [xMid - cWidth, (yMid - headshot_offset) - cHeight]
+                    # Corrigindo cálculo de movimento do mouse
+                    mouseMove = [xMid - cWidth, (yMid - headshot_offset) - cHeight]
 
-                if win32api.GetAsyncKeyState(win32con.VK_RBUTTON) & 0x8000:
-                    move_x = int(mouseMove[0] * aaMovementAmp)
-                    move_y = int(mouseMove[1] * aaMovementAmp)
-                    send_mouse_move(move_x, move_y)
+                    if win32api.GetAsyncKeyState(win32con.VK_RBUTTON) & 0x8000:
+                        move_x = int(mouseMove[0] * aaMovementAmp)
+                        move_y = int(mouseMove[1] * aaMovementAmp)
+                        send_mouse_move(move_x, move_y)
 
-                last_mid_coord = [xMid, yMid]
-            else:
-                last_mid_coord = None
+                    last_mid_coord = [xMid, yMid]
+                else:
+                    last_mid_coord = None
 
 
-        if visuals: # não é necessário para o aimbot
-            for i in range(len(targets) if not targets.empty else 0):
-                halfW = round(targets["width"].iloc[i] / 2)
-                halfH = round(targets["height"].iloc[i] / 2)
-                midX = targets['current_mid_x'].iloc[i]
-                midY = targets['current_mid_y'].iloc[i]
-                startX, startY = int(midX - halfW), int(midY - halfH)
-                endX, endY = int(midX + halfW), int(midY + halfH)
-                label = f"Human: {targets['confidence'].iloc[i]*100:.2f}%"
-                cv2.rectangle(npImg, (startX, startY), (endX, endY), COLORS[i % len(COLORS)], 2)
-                y_txt = startY - 15 if startY - 15 > 15 else startY + 15
-                cv2.putText(npImg, label, (startX, y_txt), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[i % len(COLORS)], 2)
-            cv2.imshow('Live Feed', npImg)
-            if cv2.waitKey(1) & 0xFF == ord('p'):
-                break
+            if visuals: # não é necessário para o aimbot
+                for i in range(len(targets) if not targets.empty else 0):
+                    halfW = round(targets["width"].iloc[i] / 2)
+                    halfH = round(targets["height"].iloc[i] / 2)
+                    midX = targets['current_mid_x'].iloc[i]
+                    midY = targets['current_mid_y'].iloc[i]
+                    startX, startY = int(midX - halfW), int(midY - halfH)
+                    endX, endY = int(midX + halfW), int(midY + halfH)
+                    label = f"Human: {targets['confidence'].iloc[i]*100:.2f}%"
+                    cv2.rectangle(npImg, (startX, startY), (endX, endY), COLORS[i % len(COLORS)], 2)
+                    y_txt = startY - 15 if startY - 15 > 15 else startY + 15
+                    cv2.putText(npImg, label, (startX, y_txt), cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[i % len(COLORS)], 2)
+                cv2.imshow('Live Feed', npImg)
+                if cv2.waitKey(1) & 0xFF == ord('p'):
+                    break
 
         count += 1
         if time.time() - sTime > 1:
