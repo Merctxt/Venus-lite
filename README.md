@@ -7,10 +7,8 @@ Venus Lite é um aimbot baseado em IA focado em Fortnite mas agora com modelos u
 ## Características
 ✅ Modelos Universais de AI para praticamente qualquer jogo de tiro<br>
 ✅ Detecção de inimigos em tempo real com YOLO v5  
-✅ Suporte para GPUs NVIDIA e AMD  
 ✅ Algoritmo de tracking preciso  
 ✅ Ajuste de suavidade e delay para evitar detecção  
-✅ Interface de configuração futura<br>
 ✅ Bibloteca indetectável pelo jogo
 
 ---
@@ -66,17 +64,13 @@ Venus Lite é um aimbot baseado em IA focado em Fortnite mas agora com modelos u
 - Pressione a tecla atribuída para ativar o aimbot
 - O bot irá detectar inimigos e mover a mira automaticamente
 
----
+
 
 ## ⚠️ Aviso Legal
 **Este software é apenas para fins educacionais.** Por mais que o Venus Lite seja atualmente indetectável o uso de aimbots em jogos online pode resultar em banimento da conta. Use por sua conta e risco.
 
 ---
 
-## 📌 Roadmap Futuro
-- [ ] Melhorar a detecção com modelos mais leves
-- [ ] Adicionar interface gráfica (UI) para configuração
-- [✅] Suporte para mais jogos
 
 Se tiver dúvidas ou sugestões, contribua ou abra uma issue! 🚀
 
