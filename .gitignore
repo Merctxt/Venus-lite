@@ -1,0 +1,56 @@
+# Build output
+bin/
+obj/
+build/
+dist/
+out/
+
+# Dependencies
+node_modules/
+packages/
+vendor/
+
+# IDE files
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.sln.docstates
+
+# Compiled files
+*.exe
+*.dll
+*.pdb
+*.cache
+*.class
+*.o
+*.pyc
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Environment files
+venv
+.venv
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+*.temp
+*~
+*.swp
+*.bak

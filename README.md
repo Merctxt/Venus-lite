@@ -16,9 +16,9 @@ Venus Lite é um aimbot baseado em IA focado em Fortnite mas agora com modelos u
 ## 🔧 Requisitos
 
 ### 🖥️ Hardware:
-- **GPU NVIDIA** (CUDA) ou **GPU AMD** (OpenCL)  
+- **(OBS: Ainda não existe compatibilidade para renderização em CUDA ou OpenCL)**  
 - Processador razoável para rodar inferência da IA  
-- Windows 10/11  
+- Windows 10/11 ou linux
 
 ### 📦 Softwares & Dependências:
 - Python 3.11.6  
